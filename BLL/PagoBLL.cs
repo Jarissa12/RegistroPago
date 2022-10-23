@@ -13,7 +13,7 @@ namespace RPrestamos.BLL
             _contexto = contexto;
         }
 
-        public bool Guardar4(Pago pago)
+        public bool Guardar4(Pagos pago)
         {
             if (!Existe4(pago.PagoId))
                 return this.Insertar4(pago);
@@ -27,7 +27,7 @@ namespace RPrestamos.BLL
         
         
 
-        public bool Eliminar4(Pago pago)
+        public bool Eliminar4(Pagos pago)
         {
 
 
@@ -38,7 +38,7 @@ namespace RPrestamos.BLL
         }
 
         
-        public Pago? Buscar4(int pagosId)
+        public Pagos? Buscar4(int pagosId)
         {
             return _contexto.Pago
             .Where(o => o.PagoId == pagosId)
@@ -47,7 +47,7 @@ namespace RPrestamos.BLL
             .SingleOrDefault();
         }
         
-         public List<Pago>Getlist (DateTime fecha)
+         public List<Pagos> Filtro2(DateTime fecha)
         {
 
             var fechas = _contexto.Pago
@@ -57,7 +57,7 @@ namespace RPrestamos.BLL
         }
 
 
-        private bool Insertar4(Pago pagos)
+        private bool Insertar4(Pagos pagos)
         {
             _contexto.Pago.Add(pagos);
 
@@ -73,7 +73,7 @@ namespace RPrestamos.BLL
 
             return insertados > 0;
         }
-        private bool Modificar4(Pago pago)
+        private bool Modificar4(Pagos pago)
         {
 
             _contexto.Database.ExecuteSqlRaw($"Delete FROM PagosDetalle Where PagosId = {pago.PagoId}");
@@ -87,7 +87,7 @@ namespace RPrestamos.BLL
             return _contexto.SaveChanges() > 0;
 
         }
-        public List<Pago> GetPagos(Expression<Func<Pago, bool>> Criterio)
+        public List<Pagos> GetPagos(Expression<Func<Pagos, bool>> Criterio)
         {
             return _contexto.Pago
                 .AsNoTracking()

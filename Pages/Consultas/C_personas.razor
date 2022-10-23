@@ -1,0 +1,68 @@
+﻿@page "/Consulta_P"
+
+@inject PersonasBLL personasBLL
+
+
+<EditForm Model="Datos">
+    <DataAnnotationsValidator />
+    <div class="card">
+        <div class="card-header">
+            <h3>Consulta De Personas</h3>
+
+        </div>
+
+        <div class="card-body">
+            <form>
+                <div class="input-group d-flex align-items-end">
+
+                    <button type="button" class="btn btn-warning" @onclick="Buscar">Generar</button>
+
+                </div>
+            </form>
+        </div>
+        <table class="table table-secondary">
+            <thead class="thead-dark">
+                <tr class="table-info">
+                    <th>PersonaId</th>
+                    <th>Nombre</th>
+                    <th>Telefono</th>
+                    <th>Celular</th>
+                    <th>Email</th>
+                    <th>Direccion</th>
+                    <th>FechaNacimiento</th>
+                    <th>Balance</th>
+                    <th>OcupacionId</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Datos)
+                {
+                    <tr>
+                        <td>@item.PersonaId</td>
+                        <td>@item.Nombre</td>
+                        <td>@item.Telefono</td>
+                        <td>@item.Celular</td>
+                        <td>@item.Email</td>
+                        <td>@item.Direccion</td>
+                        <td>@item.FechaNacimiento</td>
+                        <td>@item.Balance</td>
+                        <td>@item.OcupacionId</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</EditForm>
+
+@code {
+
+    public Personas personas { set; get; } = new Personas();
+    public string Filtro { get; set; }
+    public string Criterio { get; set; }
+    public List<Personas> Datos { get; set; } = new List<Personas>();
+    public void Buscar()
+    {
+        Datos = personasBLL.GetPersonas(o => true);
+    }
+
+}

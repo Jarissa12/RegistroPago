@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RPrestamos.Entidades
 {
-    public class Pago
+    public class Pagos
     {
         [Key]
 
@@ -24,7 +24,7 @@ namespace RPrestamos.Entidades
 
         [ForeignKey("PagoId")]
 
-        public virtual List<PagosDetalle> Detalle { get; set; }
+        public virtual List<PagosDetalle> Detalle { get; set; } = new List<PagosDetalle> ();
 
     }
 

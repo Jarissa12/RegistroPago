@@ -5,6 +5,7 @@ using RPrestamos.BLL;
 using Radzen;
 
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -17,18 +18,16 @@ options.UseSqlite(ConStr)
 );
 
 
-    
-
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-
-
 builder.Services.AddScoped<OcupacionesBLL>();
 builder.Services.AddScoped<PersonasBLL>();
 builder.Services.AddScoped<PrestamosBLL>();
 builder.Services.AddScoped<PagoBLL>();
 builder.Services.AddScoped<NotificationService>();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

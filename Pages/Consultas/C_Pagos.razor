@@ -1,0 +1,72 @@
+﻿@page "/pagos"
+
+
+@inject PagoBLL pagosBLL
+@inject NotificationService notificationService
+
+<EditForm Model="listaPagos">
+    <DataAnnotationsValidator />
+
+    <div class="card">
+        <div class="container">
+            <div class="mb-3">
+                <InputDate class="form-control" @bind-Value="fecha" />
+                <div class="input-group-append col-2">
+                    <button type="button" @onclick="Buscar">
+                        <i class="oi oi-magnifying-glass" /> Buscar
+                    </button>
+                </div>
+
+                <table class="table table-success table-striped">
+
+                    <thead>
+                        <tr>
+                            <th>PagosId</th>
+                            <th>Fecha</th>
+                            <th>PersonaId</th>
+                            <th>Concepto</th>
+                            <th>Monto</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var pago in listaPagos)
+                        {
+                            <tr>
+                                <td>@pago.PagoId</td>
+                                <td>@pago.Fecha</td>
+                                <td>@pago.PersonaId</td>
+                                <td>@pago.Concepto</td>
+                                <td>@pago.Monto</td>
+                                <td><a href="Pagos/@pago.PagoId">Ver</a></td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+
+</EditForm>
+
+@code {
+    public string Filtro { get; set; } = "";
+    public Pagos pagos { get; set; } = new Pagos();
+    public DateTime fecha { get; set; }
+    public List<Pagos> listaPagos { get; set; } = new List<Pagos>();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        fecha = DateTime.Now;
+    }
+
+    public void Buscar()
+    {
+        listaPagos = pagosBLL.GetPagos(o => true);
+    }
+}
