@@ -13,32 +13,65 @@ namespace RPrestamos.BLL
             _contexto = contexto;
         }
 
-        public bool Guardar4(Pagos pago)
+        public  async Task <bool> Guardar4(Pagos pago)
         {
-            if (!Existe4(pago.PagoId))
-                return this.Insertar4(pago);
+            if (! await Existe4(pago.PagoId))
+                return await this.Insertar4(pago);
             else
-                return this.Modificar4(pago);
+                return await this.Modificar4(pago);
         }
-        public bool Existe4(int PagoId)
+        public  async Task <bool>Existe4(int PagoId)
         {
-            return _contexto.Pago.Any(p => p.PagoId == PagoId);
+            return   _contexto.Pago.Any(p => p.PagoId == PagoId);
+
+        }   
+
+         public  async Task <bool> Existe(int pagosId)
+        {
+            return await _contexto.Pago.AnyAsync(o => o.PagoId == pagosId);
+        }
+
+        
+        private   async Task <bool> Insertar4(Pagos pagos)
+        {
+             _contexto.Pago.Add(pagos);
+             
+            foreach (var item in pagos.Detalle)
+            {
+                var prestamo =  _contexto.Prestamos.Find(item.PrestamoId);
+                prestamo!.Balance -= item.ValorPagado;
+
+            }
+            var persona =  _contexto.Personas.Find(pagos.PersonaId);
+            persona!.Balance -= pagos.Monto;
+
+            var insertados =  _contexto.SaveChanges();
+
+            return insertados > 0;
         }
         
         
 
-        public bool Eliminar4(Pagos pago)
+        
+        public  async Task <bool> Eliminar4(Pagos pagos)
         {
 
+            var persona = _contexto.Personas.Find(pagos.PersonaId);
+            persona!.Balance += pagos.Monto;
 
-            _contexto.Entry(pago).State = EntityState.Deleted;
+            foreach (var item in pagos.Detalle)
+            {
+                var prestamo =  _contexto.Prestamos.Find(item.PrestamoId);
+                prestamo!.Balance += item.ValorPagado;
+            }
+
+            _contexto.Entry(pagos).State = EntityState.Deleted;
+
             return _contexto.SaveChanges() > 0;
-
-
         }
 
         
-        public Pagos? Buscar4(int pagosId)
+        public async Task <Pagos?>Buscar4(int pagosId)
         {
             return _contexto.Pago
             .Where(o => o.PagoId == pagosId)
@@ -57,45 +90,47 @@ namespace RPrestamos.BLL
         }
 
 
-        private bool Insertar4(Pagos pagos)
+        
+        private   async Task <bool> Modificar4(Pagos pagoActual)
         {
-            _contexto.Pago.Add(pagos);
+            var pagoAnterior = _contexto.Pago
+                 .Where(p => p.PagoId == pagoActual.PagoId)
+                 .AsNoTracking()
+                 .SingleOrDefault();
 
-            foreach (var item in pagos.Detalle)
+            var Persona =  _contexto.Personas.Find(pagoAnterior!.PersonaId);
+            Persona!.Balance += pagoAnterior.Monto;
+
+            foreach (var item in pagoAnterior.Detalle)
             {
-                var pago = _contexto.Pago.Find(item.PagoId);
-
-                pago.Monto += item.ValorPagado;
+                var prestamos =  _contexto.Prestamos.Find(item.PrestamoId);
+                prestamos!.Balance += item.ValorPagado;
 
             }
+             _contexto.Database.ExecuteSqlRawAsync($"Delete FROM PagosDetalle Where PagoId = {pagoActual.PagoId}");
 
-            var insertados = _contexto.SaveChanges();
-
-            return insertados > 0;
-        }
-        private bool Modificar4(Pagos pago)
-        {
-
-            _contexto.Database.ExecuteSqlRaw($"Delete FROM PagosDetalle Where PagosId = {pago.PagoId}");
-
-            foreach (var item in pago.Detalle)
+            foreach (var item in pagoActual.Detalle)
             {
                 _contexto.Entry(item).State = EntityState.Added;
+
+                var prestamo = _contexto.Prestamos.Find(item.PrestamoId);
+                prestamo!.Balance -= item.ValorPagado;
+
             }
-            _contexto.Entry(pago).State = EntityState.Modified;
+
+            Persona.Balance -= pagoActual.Monto;
+
+            _contexto.Entry(pagoActual).State = EntityState.Modified;
+
+            _contexto.Entry(pagoActual).State = EntityState.Detached;
 
             return _contexto.SaveChanges() > 0;
 
         }
-        public List<Pagos> GetPagos(Expression<Func<Pagos, bool>> Criterio)
-        {
-            return _contexto.Pago
-                .AsNoTracking()
-                .Where(Criterio)
-                .ToList();
-        }
+        
+       
 
-        public List<Prestamos> GetPrestamos(Expression<Func<Prestamos, bool>> Criterio)
+        public  async Task <List<Prestamos>> GetPrestamos(Expression<Func<Prestamos, bool>> Criterio)
         {
             return _contexto.Prestamos
                 .AsNoTracking()
@@ -103,7 +138,18 @@ namespace RPrestamos.BLL
                 .ToList();
         }
 
-        public List<Personas> GetPersonas(Expression<Func<Personas, bool>> Criterio)
+
+        public  async Task <List<Pagos>> GetPagos(Expression<Func<Pagos, bool>> Criterio)
+        {
+            return _contexto.Pago
+                .AsNoTracking()
+                .Where(Criterio)
+                .ToList();
+        }
+
+        
+
+        public async Task <List<Personas>> GetPersonas(Expression<Func<Personas, bool>> Criterio)
         {
             return _contexto.Personas
                 .AsNoTracking()

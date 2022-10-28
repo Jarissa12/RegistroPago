@@ -35,7 +35,7 @@ namespace RPrestamos.Migrations
                     b.ToTable("Ocupaciones");
                 });
 
-            modelBuilder.Entity("RPrestamos.Entidades.Pago", b =>
+            modelBuilder.Entity("RPrestamos.Entidades.Pagos", b =>
                 {
                     b.Property<int>("PagoId")
                         .ValueGeneratedOnAdd()
@@ -150,14 +150,14 @@ namespace RPrestamos.Migrations
 
             modelBuilder.Entity("RPrestamos.Entidades.PagosDetalle", b =>
                 {
-                    b.HasOne("RPrestamos.Entidades.Pago", null)
+                    b.HasOne("RPrestamos.Entidades.Pagos", null)
                         .WithMany("Detalle")
                         .HasForeignKey("PagoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("RPrestamos.Entidades.Pago", b =>
+            modelBuilder.Entity("RPrestamos.Entidades.Pagos", b =>
                 {
                     b.Navigation("Detalle");
                 });

@@ -1,7 +1,7 @@
 ﻿@page "/Consulta_Prest"
 @inject PrestamosBLL prestamosBLL
 
-<EditForm Model="Datos">
+<EditForm Model="prestamos">
     <DataAnnotationsValidator />
     <div class="card">
         <div class="card-header">
@@ -39,8 +39,8 @@
                         <td>@item.Fecha</td>
                         <td>@item.Vence</td>
                         <td>@item.Concepto</td>
-                        <td>@item.Balance</td>
                         <td>@item.Monto</td>
+                        <td>@item.Balance</td>
                         <td>@item.PersonaId</td>
                     </tr>
                 }
@@ -57,9 +57,9 @@
     public List<Prestamos> Datos { get; set; } = new List<Prestamos>();
 
 
-    public void Buscar()
+    public async Task Buscar()
     {
-        Datos = prestamosBLL.GetPrestamos(o => true);
+        Datos = await prestamosBLL.GetPrestamos(o => true);
     }
 
 }

@@ -97,7 +97,6 @@
                 <div class="form-group text-center" display: inline-block>
                     <button type="button" class="bi bi-file-earmark-plus btn btn-lg btn-primary" @onclick="Nuevo">Nuevo</button>
                     <button type="submit" class="bi bi-save btn btn-lg btn-success">Guardar</button>
-                    <button type="submit" class="bi bi-pencil btn btn-lg btn-success">Editar</button>
                     <button type="button" class="bi bi trash3 btn btn-lg btn-danger" @onclick="Eliminar">Eliminar</button>
                 </div>
             </div>
@@ -118,15 +117,15 @@
     public string Criterio { get; set; } = "";
 
 
-    protected override void OnInitialized()
+    protected async override Task  OnInitializedAsync()
     {
         if (PersonaId > 0)
         {
-            this.personas.PersonaId = PersonaId;
-            this.Buscar();
+           this.personas.PersonaId = PersonaId;
+           await this.Buscar();
 
         }
-        lista = personasBLL.GetOcupaciones(c => true);
+           lista =  await personasBLL.GetOcupaciones(c => true);
     }
 
     public void Nuevo()
@@ -144,10 +143,10 @@
         return personas.Email.Contains(".Com");
     }
 
-    public void Guardar()
+    public async Task Guardar()
     {
 
-        bool guardo = personasBLL.Guardar1(personas);
+        bool guardo = await personasBLL.Guardar1(personas);
 
         if (guardo)
         {
@@ -164,22 +163,22 @@
             Nuevo();
         }
     }
-    private void Buscar()
+    private async Task Buscar()
     {
         if (personas.PersonaId > 0 || ocupacion.OcupacionId > 0)
         {
-            var encontrado = personasBLL.Buscar1(personas.PersonaId);
+            var encontrado = await personasBLL.Buscar1(personas.PersonaId);
 
             if (encontrado != null)
                 this.personas = encontrado;
         }
     }
 
-    public void Eliminar()
+    public async Task Eliminar()
     {
         bool elimino;
 
-        elimino = personasBLL.Eliminar1(personas);
+        elimino = await personasBLL.Eliminar1(personas);
 
         if (elimino)
         {
@@ -193,6 +192,7 @@
 
 
                 });
+
             Nuevo();
 
 
@@ -203,10 +203,10 @@
 
         notificationService.Notify(message);
     }
-    public void Editar()
+    public async Task Editar()
     {
 
-        var editar = personasBLL.Editar(personas);
+        var editar = await personasBLL.Editar(personas);
 
     }
 

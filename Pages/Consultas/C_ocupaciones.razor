@@ -66,10 +66,10 @@
 
     }
 
-    private void Buscar()
+    private async Task Buscar()
     {
 
-        lista = ocupacionesBLL.GetOcupaciones(o => true);
+    lista = await ocupacionesBLL.GetOcupaciones(o => true);
 
     }
 

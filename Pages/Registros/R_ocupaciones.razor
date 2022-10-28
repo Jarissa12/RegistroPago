@@ -1,5 +1,5 @@
 ﻿@page "/RegistroOcupacion"
-@page "/RegistroOcupacion/{OcupacionId:int}"
+@page "/RegistroOcupacion/{OcupacionId:int}" 
 @inject OcupacionesBLL OcupacionesBLL
 @inject NotificationService notificationService
 
@@ -48,7 +48,7 @@
             <div class="form-group text-center" display: inline-block>
                 <button type="button" class=" bi bi-file-earmark-plus btn btn-lg btn-primary" @onclick="Nuevo">Nuevo</button>
                 <button type="submit" class=" bi bi-save btn btn-lg btn-success">Guardar</button>
-                <button type="submit" class=" bi bi-pencil btn btn-lg btn-success">Editar</button>
+                
                 <button type="button" class="  bi bi-trash3 btn btn-lg btn-danger " @onclick="Eliminar">Eliminar</button>
             </div>
         </div>
@@ -76,7 +76,7 @@
         }
     }
 
-    public void Nuevo()
+    public void  Nuevo()
     {
         ocupacion = new Ocupaciones();
     }
@@ -86,10 +86,10 @@
         return ocupacion.Descripcion.Contains(".");
     }
 
-    public void Guardar()
+    public async Task Guardar()
     {
 
-        bool guardo = OcupacionesBLL.Guardar(ocupacion);
+        bool guardo  = await OcupacionesBLL.Guardar(ocupacion);
 
         if (guardo)
         {
@@ -106,20 +106,20 @@
             Nuevo();
         }
     }
-    private void Buscar()
+    private async Task Buscar()
     {
         if (ocupacion.OcupacionId > 0)
         {
-            var encontrado = OcupacionesBLL.Buscar(ocupacion.OcupacionId);
+            var  encontrado = await OcupacionesBLL.Buscar(ocupacion.OcupacionId);
 
             if (encontrado != null)
                 this.ocupacion = encontrado;
         }
     }
 
-    public void Eliminar()
+    public async Task Eliminar()
     {
-        bool elimino = OcupacionesBLL.Eliminar(ocupacion);
+        bool  elimino = await OcupacionesBLL.Eliminar(ocupacion);
 
         if (elimino)
         {
@@ -141,18 +141,6 @@
     {
 
         notificationService.Notify(message);
-    }
-
-
-
-
-
-    public void Editar()
-    {
-
-        var editar = OcupacionesBLL.Editar(ocupacion);
-
-
     }
 
 }

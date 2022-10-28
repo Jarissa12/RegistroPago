@@ -60,9 +60,9 @@
     public string Filtro { get; set; }
     public string Criterio { get; set; }
     public List<Personas> Datos { get; set; } = new List<Personas>();
-    public void Buscar()
+    public async Task Buscar()
     {
-        Datos = personasBLL.GetPersonas(o => true);
+        Datos = await personasBLL.GetPersonas(o => true);
     }
 
 }

@@ -16,14 +16,15 @@ namespace RPrestamos.BLL
             contextos = contexto;
         }
 
-        public bool Existe2(int PrestamosId)
+        public async Task <bool>  Existe2(int PrestamosId)
         {
-            return contextos.Prestamos.Any(o => o.PrestamosId == PrestamosId);
+            return await contextos.Prestamos.AnyAsync(o => o.PrestamosId == PrestamosId);
         }
 
-        public bool Insertar2(Prestamos prestamo)
+        public async Task <bool>  Insertar2(Prestamos prestamo)
         {
-            contextos.Prestamos.Add(prestamo);
+            contextos.Prestamos.AddAsync(prestamo);
+             prestamo.Balance = prestamo.Monto;
 
             var persona = contextos.Personas.Find(prestamo.PersonaId);
             persona.Balance += prestamo.Monto;
@@ -33,7 +34,7 @@ namespace RPrestamos.BLL
             return cantidad > 0;
         }
 
-        public bool Modificar2(Prestamos prestamoActual)
+        public async Task <bool>  Modificar2(Prestamos prestamoActual)
         {
             //descontar el monto anterior
             var prestamoAnterior = contextos.Prestamos
@@ -50,29 +51,34 @@ namespace RPrestamos.BLL
             var persona = contextos.Personas.Find(prestamoActual.PersonaId);
             persona.Balance += prestamoActual.Monto;
 
-            return contextos.SaveChanges() > 0;
+            return await contextos.SaveChangesAsync() > 0;
         }
-        public bool Eliminar2(Prestamos prestamo)
+
+
+        
+        public async Task <bool>  Eliminar2(Prestamos prestamo)
         {
             var persona = contextos.Personas.Find(prestamo.PersonaId);
             persona.Balance -= prestamo.Monto;
 
             contextos.Entry(prestamo).State = EntityState.Deleted;
-            return contextos.SaveChanges() > 0;
+            return await contextos.SaveChangesAsync() > 0;
         }
 
 
-        public bool Guardar2(Prestamos prestamos)
+        public async Task <bool> Guardar2(Prestamos prestamos)
         {
-            if (!Existe2(prestamos.PrestamosId))
-                return this.Insertar2(prestamos);
+            if (!await Existe2(prestamos.PrestamosId))
+                return await this.Insertar2(prestamos);
             else
-                return this.Modificar2(prestamos);
+                return await this.Modificar2(prestamos);
+
+                
         }
 
 
 
-        public Prestamos? Buscar2(int prestamosId)
+        public async Task <Prestamos?> Buscar2(int prestamosId)
         {
             return contextos.Prestamos
                     .Where(o => o.PrestamosId == prestamosId)
@@ -82,16 +88,16 @@ namespace RPrestamos.BLL
         }
 
 
-        public bool Editar(Prestamos prestamos)
+        public async Task <bool>  Editar(Prestamos prestamos)
         {
-            if (!Existe2(prestamos.PrestamosId))
-                return this.Insertar2(prestamos);
+            if (!await Existe2(prestamos.PrestamosId))
+                return await this.Insertar2(prestamos);
             else
-                return this.Modificar2(prestamos);
+                return await this.Modificar2(prestamos);
         }
 
 
-        public List<Prestamos> GetPrestamos(Expression<Func<Prestamos, bool>> Criterio)
+        public  async Task <List<Prestamos>> GetPrestamos(Expression<Func<Prestamos, bool>> Criterio)
         {
             return contextos.Prestamos
                 .AsNoTracking()
@@ -99,7 +105,7 @@ namespace RPrestamos.BLL
                 .ToList();
         }
 
-        public List<Personas> GetPersonas(Expression<Func<Personas, bool>> Criterio)
+        public  async Task <List<Personas>> GetPersonas(Expression<Func<Personas, bool>> Criterio)
         {
             return contextos.Personas
                 .AsNoTracking()

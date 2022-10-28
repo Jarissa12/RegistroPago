@@ -36,13 +36,22 @@
                 </div>
 
 
-
-                @*vence *@
-                <div class="form-group">
-                    <label>vence </label>
-                    <InputNumber @bind-Value="prestamos.Vence" class="form-control" />
-                    <ValidationMessage For="@(() => prestamos.Vence)" />
+                     @*Fecha*@
+                <div class="input-group">
+                    <span class="input-group-text">Fecha de inicio</span>
+                    <input type="date" @bind-value="prestamos.Fecha" />
                 </div>
+                <ValidationMessage For="@(() => prestamos.Fecha)" />
+
+                
+                    @*vecimiento*@
+                <div class="form-group">
+                    <label>  fecha Vencimiento en dias </label>
+                    <InputNumber @bind-Value="prestamos.Vence" class="form-control" />
+                   <ValidationMessage For="@(() => prestamos.Vence)" />   
+                </div>
+
+                 
 
 
                 @*Concepto*@
@@ -60,19 +69,6 @@
                 </div>
 
 
-
-                @*Fecha*@
-                <div class="input-group">
-                    <span class="input-group-text">Fecha</span>
-                    <input type="date" @bind-value="prestamos.Fecha" />
-                </div>
-                <ValidationMessage For="@(() => prestamos.Fecha)" />
-
-                <div class="mb-3">
-                    <label>Balance</label>
-                    <InputNumber @bind-Value="prestamos.Balance" class="form-control" />
-                    <ValidationMessage For="@(() => prestamos.Balance)" />
-                </div>
 
                 @*PersonaID*@
                 
@@ -94,7 +90,7 @@
                 <div class="form-group text-center" display: inline-block>
                     <button type="button" class="bi bi-file-earmark-plus btn btn-lg btn-primary" @onclick="Nuevo">Nuevo</button>
                     <button type="submit" class="bi bi-save btn btn-lg btn-success">Guardar</button>
-                    <button type="submit" class="bi bi-pencil btn btn-lg btn-success">Editar</button>
+                    
                     <button type="button" class=" bi bi-trash3 btn btn-lg btn-danger" @onclick="Eliminar">Eliminar</button>
                 </div>
             </div>
@@ -117,15 +113,15 @@
     public string Filtro { get; set; } = "";
     public string Criterio { get; set; } = "";
 
-    protected override void OnInitialized()
+    protected async override Task  OnInitializedAsync()
     {
         if (PrestamosId > 0)
         {
             this.prestamos.PrestamosId = PrestamosId;
-            this.Buscar();
+            await this.Buscar();
         }
 
-        lista = prestamosBLL.GetPersonas(c => true);
+        lista = await prestamosBLL.GetPersonas(c => true);
     }
 
     public void Nuevo()
@@ -133,10 +129,10 @@
         prestamos = new Prestamos();
     }
 
-    public void Guardar()
+    public async Task Guardar()
     {
 
-        bool guardo = prestamosBLL.Guardar2(prestamos);
+        bool guardo = await prestamosBLL.Guardar2(prestamos);
 
         if (guardo)
         {
@@ -154,22 +150,22 @@
             Nuevo();
         }
     }
-    private void Buscar()
+    private async Task  Buscar()
     {
         if (prestamos.PrestamosId > 0 || prestamos.PersonaId > 0)
         {
-            var encontrado = prestamosBLL.Buscar2(prestamos.PrestamosId);
+            var encontrado = await prestamosBLL.Buscar2(prestamos.PrestamosId);
 
             if (encontrado != null)
                 this.prestamos = encontrado;
         }
     }
 
-    public void Eliminar()
+    public async Task Eliminar()
     {
         bool elimino;
 
-        elimino = prestamosBLL.Eliminar2(prestamos);
+        elimino = await prestamosBLL.Eliminar2(prestamos);
 
         if (elimino)
         {
@@ -196,10 +192,10 @@
 
 
 
-    public void Editar()
+    public async Task Editar()
     {
 
-        var editar = prestamosBLL.Editar(prestamos);
+        var editar = await prestamosBLL.Editar(prestamos);
 
     }
 

@@ -65,8 +65,8 @@
         fecha = DateTime.Now;
     }
 
-    public void Buscar()
+    public async Task Buscar()
     {
-        listaPagos = pagosBLL.GetPagos(o => true);
+        listaPagos = await pagosBLL.GetPagos(o => true);
     }
 }

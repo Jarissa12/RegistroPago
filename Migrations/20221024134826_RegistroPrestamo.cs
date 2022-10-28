@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace RPrestamos.Migrations
 {
-    public partial class Inicial : Migration
+    public partial class RegistroPrestamo : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

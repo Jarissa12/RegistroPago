@@ -143,17 +143,34 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var pago in pago.Detalle)
-                    {
-                        <tr>
-                            <td>@pago.Id</td>
-                            <td>@pago.PrestamoId</td>
-                            <td>@pago.PagoId</td>
-                            <td>@pago.ValorPagado</td>
-                        </tr>
-                    }
+                    @foreach (var item in pago.Detalle)
+                        {
+
+                            if (item == pago.Detalle.ElementAt(0))
+                            {
+                                pago.Monto = 0;
+                            }
+                            <tr>
+                                <td>@item.Id</td>
+                                <td>@item.PrestamoId</td>
+                                <td>@item.PagoId</td>
+                                <td>@item.ValorPagado</td> 
+                            </tr>
+
+                            pago.Monto += item.ValorPagado;
+                        }
                 </tbody>
             </table>
+
+
+            <div class="row justify-content-between">
+                    <div class="col-4">
+                        <label>Monto Total</label>
+                        <div class="input-group mb-3">
+                            <span class="form-control">@pago.Monto</span>
+                        </div>
+                    </div>
+                </div>
         </div>
     </div>
 
@@ -174,7 +191,8 @@
 
 </EditForm>
 
-@code {
+@code{
+
     [Parameter]
     public int PagoId { get; set; }
 
@@ -185,39 +203,50 @@
     public List<Prestamos> listPrestamos { get; set; } = new List<Prestamos>();
 
 
-    protected override void OnInitialized()
+    protected  async override Task  OnInitializedAsync()
     {
         if (PagoId > 0)
         {
 
             this.pago.PagoId = PagoId;
-            this.Buscar();
+            await this.Buscar();
         }
         pago.Fecha = DateTime.Now;
         
-        listPersonas = personasBLL.GetPersonas(o => true);
-        listPago = pagoBLL.GetPagos(o => true);
-        listPrestamos = prestamoBLL.GetPrestamos(o => true);
+        listPersonas = await  personasBLL.GetPersonas(o => true);
+        listPago = await  pagoBLL.GetPagos(o => true);
+        listPrestamos = await prestamoBLL.GetPrestamos(o => true);
+    }
+    public  async Task AgregarDetalle()
+    {
+        if (pago.PersonaId > 0)
+        {
+             pago.Detalle.Add(detalle);
+            detalle = new PagosDetalle();
+        }
     }
 
-    private void Buscar()
+
+     // hacer cargar 
+
+     //public void cargar {
+
+      //  listPrestamos = prestamoBLL.getList (p=> p.PersonaId == pago.PersonaId &&  p.balance>0)
+     //}
+    private async Task  Buscar()
     {
         if (pago.PagoId > 0)
         {
-            var encontrado = pagoBLL.Buscar4(pago.PagoId);
+            var encontrado = await pagoBLL.Buscar4(pago.PagoId);
 
             if (encontrado != null)
                 this.pago = encontrado;
 
         }
     }
-    public void AgregarDetalle()
-    {
-        var pago = pagoBLL.Buscar4(detalle.PagoId);
-        if (pago != null)
-            pago.Detalle.Add(detalle);
-    }
+    
 
+   
 
 
     bool Validar()
@@ -225,12 +254,12 @@
         return true;
     }
 
-    public void Nuevo()
+    public void  Nuevo()
     {
         pago = new Pagos();
     }
 
-    public void Guardar()
+    public async Task  Guardar()
     {
         bool guardo;
 
@@ -246,7 +275,7 @@
         }
 
 
-        guardo = pagoBLL.Guardar4(pago);
+        guardo = await pagoBLL.Guardar4(pago);
 
         if (guardo)
         {
@@ -262,11 +291,11 @@
         }
 
     }
-    public void Eliminar()
+    public async Task  Eliminar()
     {
         bool elimino;
 
-        elimino = pagoBLL.Eliminar4(pago);
+        elimino = await pagoBLL.Eliminar4(pago);
 
         if (elimino)
         {
@@ -281,8 +310,6 @@
 
         }
     }
-
-
 
     void ShowNotification(NotificationMessage message)
     {
